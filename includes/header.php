@@ -1,22 +1,30 @@
 <?php
-require_once 'config.php'; // Assurez-vous que le chemin est correct
+// Vérifie si une session est déjà active avant de démarrer une nouvelle session
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Projet</title>
-    <link rel="stylesheet" href="<?= BASE_URL ?>style.css">
+    <title>AlloBesoin</title>
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="<?= BASE_URL ?>index.php">Accueil</a>
-            <a href="<?= BASE_URL ?>pages/rechercher.php">Rechercher</a>
-            <a href="<?= BASE_URL ?>pages/publier_demande.php">Publier une Demande</a>
-            <a href="<?= BASE_URL ?>pages/proposer_service.php">Proposer un Service</a>
-            <a href="<?= BASE_URL ?>pages/messagerie.php">Messagerie</a>
-            <a href="<?= BASE_URL ?>pages/connexion.php">Connexion</a>
-            <a href="<?= BASE_URL ?>pages/inscription.php">Inscription</a>
+            <ul>
+                <li><a href="accueil.php">Accueil</a></li>
+                
+                <?php if (isset($_SESSION['utilisateur_id'])): ?>
+                    <li><a href="profil.php">Mon compte</a></li>
+                    <li><a href="deconnexion.php">Déconnexion</a></li>
+                <?php else: ?>
+                    <li><a href="connexion.php">Connexion</a></li>
+                    <li><a href="inscription.php">Inscription</a></li>
+                <?php endif; ?>
+            </ul>
         </nav>
     </header>
