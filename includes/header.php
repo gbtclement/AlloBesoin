@@ -20,11 +20,10 @@ if (session_status() === PHP_SESSION_NONE) {
                 
                 <?php if (isset($_SESSION['utilisateur_id'])): ?>
                     <li><a href="profil.php">Mon compte</a></li>
-                    <li><a href="deconnexion.php">Déconnexion</a></li>
                 <?php else: ?>
                     <li><a href="connexion.php">Connexion</a></li>
-                    <li><a href="inscription.php">Inscription</a></li>
                 <?php endif; ?>
             </ul>
         </nav>
     </header>
+    <div class="content">

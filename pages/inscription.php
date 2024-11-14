@@ -6,12 +6,59 @@ if (empty($_SESSION['token'])) {
     $_SESSION['token'] = bin2hex(random_bytes(32));
 }
 
+// Inclusion de la connexion à la base de données
+include('../includes/database.php');
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Vérification du token CSRF
+    if (isset($_POST['token']) && $_POST['token'] === $_SESSION['token']) {
+        // Récupération des données du formulaire
+        $nom = htmlspecialchars($_POST['nom']);
+        $email = htmlspecialchars($_POST['email']);
+        $mot_de_passe = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
+
+        // Vérifier si l'email existe déjà
+        $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $message = "Cet email est déjà utilisé. Veuillez en choisir un autre.";
+        } else {
+            // Insérer l'utilisateur dans la base de données
+            $stmt = $conn->prepare("INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $nom, $email, $mot_de_passe);
+
+            if ($stmt->execute()) {
+                $message = "Inscription réussie ! <a href='connexion.php'>Connectez-vous</a>";
+            } else {
+                // Gestion des erreurs d'insertion
+                $message = "Erreur lors de l'inscription. Veuillez réessayer.";
+            }
+        }
+
+        $stmt->close();
+        $conn->close();
+    } else {
+        // Gestion de l'erreur CSRF
+        $message = "Erreur CSRF. Veuillez réessayer.";
+    }
+}
+
 include('../includes/header.php');
 ?>
 
 <div class="container">
     <h1>Inscription</h1>
-    <form method="POST" action="inscription_traitement.php">
+
+    <!-- Affichage du message de statut -->
+    <?php if (isset($message)) : ?>
+        <p><?= $message ?></p>
+    <?php endif; ?>
+
+    <!-- Formulaire d'inscription -->
+    <form method="POST">
         <label for="nom">Nom :</label>
         <input type="text" id="nom" name="nom" required>
 
