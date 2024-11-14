@@ -19,9 +19,15 @@ $stmt->fetch();
 $stmt->close();
 ?>
 
-<h2>Mon Profil</h2>
-<p><strong>Nom :</strong> <?= htmlspecialchars($nom) ?></p>
-<p><strong>Email :</strong> <?= htmlspecialchars($email) ?></p>
-<p><strong>Date d'inscription :</strong> <?= htmlspecialchars($date_inscription) ?></p>
+<h1>Bonjour <?= htmlspecialchars($nom) ?></h1>
+
+<div class="onglets">
+    <a href="mes_informations.php">Mes informations</a>
+    <a href="mes_annonces.php">Mes annonces</a>
+    <a href="mes_favoris.php">Mes favoris</a>
+    <a href="messagerie.php">Messagerie</a>
+</div>
+
+<a class="btn-deconnexion" href="deconnexion.php">Déconnexion</a>
 
 <?php include('../includes/footer.php'); ?>
