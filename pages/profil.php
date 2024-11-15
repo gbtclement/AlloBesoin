@@ -11,15 +11,15 @@ if (!isset($_SESSION['utilisateur_id'])) {
 
 // Récupérer les informations de l'utilisateur connecté
 $user_id = $_SESSION['utilisateur_id'];
-$stmt = $conn->prepare("SELECT nom, email, date_inscription FROM utilisateurs WHERE id = ?");
+$stmt = $conn->prepare("SELECT prenom FROM utilisateurs WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($nom, $email, $date_inscription);
+$stmt->bind_result($prenom);
 $stmt->fetch();
 $stmt->close();
 ?>
 
-<h1>Bonjour <?= htmlspecialchars($nom) ?></h1>
+<h1>Bonjour <?= htmlspecialchars($prenom) ?></h1>
 
 <div class="onglets">
     <a href="mes_informations.php">Mes informations</a>

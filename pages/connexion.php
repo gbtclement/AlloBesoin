@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Connexion réussie, on définit la session utilisateur
             $_SESSION['utilisateur_id'] = $utilisateur['id'];
             $_SESSION['nom'] = $utilisateur['nom'];
-            header("Location: accueil.php");
+            header("Location: profil.php");
             exit();
         } else {
             echo "Mot de passe incorrect.";
