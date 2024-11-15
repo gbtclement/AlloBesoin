@@ -24,7 +24,7 @@ if (isset($_GET['id'])) {
         $annonce = $result->fetch_assoc();
 
         // Traitement du formulaire de modification
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['modifier'])) {
             // Récupérer les données du formulaire
             $titre = htmlspecialchars($_POST['titre']);
             $description = htmlspecialchars($_POST['description']);
@@ -32,17 +32,6 @@ if (isset($_GET['id'])) {
             $date_debut = $_POST['date_debut'];
             $date_fin = $_POST['date_fin'];
             $tarif = $_POST['tarif'];
-
-            // Validation de la date de fin
-            if (strtotime($date_fin) < strtotime($date_debut)) {
-                echo "<p>La date de fin ne peut pas être antérieure à la date de début.</p>";
-                exit();
-            }
-
-            // Si la date_fin est vide, on peut ne pas la mettre à jour
-            if (empty($date_fin)) {
-                $date_fin = null; // ou toute autre valeur par défaut
-            }
 
             // Traitement de l'image téléchargée (si présente)
             $image_name = $annonce['image']; // Par défaut, on garde l'image actuelle
@@ -52,27 +41,26 @@ if (isset($_GET['id'])) {
                 $upload_path = $upload_dir . $image_name;
 
                 if (!move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
-                    echo "<p>Erreur lors du téléchargement de l'image.</p>";
+                    echo "Erreur lors du téléchargement de l'image.";
                     exit();
                 }
             }
-
             // Préparer la requête SQL pour mettre à jour l'annonce
             $update_stmt = $conn->prepare("UPDATE annonces SET titre = ?, description = ?, lieu = ?, date_debut = ?, date_fin = ?, tarif = ?, image = ? WHERE id = ? AND utilisateur_id = ?");
-            $update_stmt->bind_param("ssssdsisi", $titre, $description, $lieu, $date_debut, $date_fin, $tarif, $image_name, $annonce_id, $_SESSION['utilisateur_id']);
+            $update_stmt->bind_param("ssssssssi", $titre, $description, $lieu, $date_debut, $date_fin, $tarif, $image_name, $annonce_id, $_SESSION['utilisateur_id']);
 
+            // Vérifier et exécuter la requête
             if ($update_stmt->execute()) {
                 echo "<p>Annonce mise à jour avec succès.</p>";
                 // Optionnellement, rediriger l'utilisateur vers la page de mes annonces ou vers la page d'affichage de l'annonce
                 header("Location: mes_annonces.php");
                 exit();
             } else {
-                echo "<p>Erreur lors de la mise à jour de l'annonce.</p>";
+                echo "<p>Erreur lors de la mise à jour de l'annonce : " . mysqli_error($conn) . "</p>";
             }
 
             $update_stmt->close();
         }
-
 
         // Traitement de la suppression
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer'])) {
@@ -100,6 +88,7 @@ if (isset($_GET['id'])) {
 ?>
         <h1>Modifier l'annonce</h1>
         <form method="POST" enctype="multipart/form-data">
+
             <div class="form-group row">
                 <label for="titre">Titre :</label>
                 <input type="text" id="titre" name="titre" value="<?php echo htmlspecialchars($annonce['titre']); ?>" required>

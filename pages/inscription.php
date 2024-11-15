@@ -14,6 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['token']) && $_POST['token'] === $_SESSION['token']) {
         // Récupération des données du formulaire
         $nom = htmlspecialchars($_POST['nom']);
+        $prenom = htmlspecialchars($_POST['prenom']);
+        $departement = htmlspecialchars($_POST['departement']);
         $email = htmlspecialchars($_POST['email']);
         $mot_de_passe = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT);
 
@@ -27,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = "Cet email est déjà utilisé. Veuillez en choisir un autre.";
         } else {
             // Insérer l'utilisateur dans la base de données
-            $stmt = $conn->prepare("INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $nom, $email, $mot_de_passe);
+            $stmt = $conn->prepare("INSERT INTO utilisateurs (nom, prenom, departement, email, mot_de_passe) VALUES (?, ?, ?, ?, ?)");
+            $stmt->bind_param("sssss", $nom, $prenom, $departement, $email, $mot_de_passe);
 
             if ($stmt->execute()) {
                 $message = "Inscription réussie ! <a href='connexion.php'>Connectez-vous</a>";
@@ -61,6 +63,12 @@ include('../includes/header.php');
     <form method="POST">
         <label for="nom">Nom :</label>
         <input type="text" id="nom" name="nom" required>
+
+        <label for="prenom">Prénom :</label>
+        <input type="text" id="prenom" name="prenom" required>
+
+        <label for="departement">Département :</label>
+        <input type="text" id="departement" name="departement" required>
 
         <label for="email">Email :</label>
         <input type="email" id="email" name="email" required>
